@@ -41,7 +41,7 @@ def decode(ids):
 # Streamlit app
 def main():
     st.set_page_config(page_title="Devanagari Tokenizer", layout="wide")
-    st.title("Devanagari Text Tokenizer and Decoder")
+    st.title("Devanagari - BPE Tokenizer")
     st.markdown(
         """<style>
             .stTextArea label {
@@ -94,6 +94,26 @@ def main():
         st.text_area(
             "Encoded Tokens:", value=str(st.session_state["encoded_tokens"]), height=200
         )
+
+        # Token-to-text relation button
+        st.header("Token-to-Text Relation")
+        if st.button("Show Token-to-Text Relation"):
+            if st.session_state["encoded_tokens"]:
+                relation_output = []
+                try:
+                    for idx in eval(str(st.session_state["encoded_tokens"])):
+                        relation_output.append(f"{idx} >> {itos[str(idx)]}")
+                    st.text_area(
+                        "Token-to-Text Relation:",
+                        value="\n".join(relation_output),
+                        height=200,
+                    )
+                except Exception as e:
+                    st.error(f"Error during relation display: {e}")
+            else:
+                st.warning(
+                    "No encoded tokens available. Please encode some text first."
+                )
 
     # Column 2: Decoding
     with col2:

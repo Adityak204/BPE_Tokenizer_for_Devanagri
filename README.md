@@ -11,11 +11,11 @@ The data used for training the tokenizer is the Hindi Wikipedia Articles from [K
 ## Key Highlights
 - Custom BPE tokenizer has been created
 - In utf-8 encoding Hindi characters/phoenemes are stored as 3 bytes, in this implementation, we are considering each hindi character as a single byte. (Why should Latin have all the fun?)
-- The vocab size is 3000. BPE has managed to compress the original token count by 3.29X
+- The vocab size is 3000. BPE has managed to compress the original token count by 3.73X
 ```
 Initial number of token: 2349074
-Final number of token: 713710
-compression ratio: 3.29X
+Final number of token: 630144
+compression ratio: 3.73X
 ```
 
 ## How to run the app on local

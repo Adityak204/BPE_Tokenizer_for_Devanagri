@@ -3,7 +3,6 @@ import json
 import pickle
 from src.bpe_tokenizer import get_stats, merge
 
-
 # Load the JSON files
 file_path_itos = "artifacts/itos.json"
 file_path_stoi = "artifacts/stoi.json"
@@ -41,48 +40,82 @@ def decode(ids):
 
 # Streamlit app
 def main():
+    st.set_page_config(page_title="Devanagari Tokenizer", layout="wide")
     st.title("Devanagari Text Tokenizer and Decoder")
+    st.markdown(
+        """<style>
+            .stTextArea label {
+                font-family: 'Arial', sans-serif;
+                font-size: 16px;
+                color: #333;
+            }
+            .stTextArea textarea {
+                font-family: 'Courier New', monospace;
+                font-size: 14px;
+            }
+            .stButton button {
+                font-family: 'Arial', sans-serif;
+                font-size: 16px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            .stButton button:hover {
+                background-color: #45a049;
+            }
+        </style>""",
+        unsafe_allow_html=True,
+    )
+
+    # State to persist outputs
+    if "encoded_tokens" not in st.session_state:
+        st.session_state["encoded_tokens"] = ""
+    if "decoded_text" not in st.session_state:
+        st.session_state["decoded_text"] = ""
 
     # Layout with two columns
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2, gap="large")
 
     # Column 1: Encoding
     with col1:
         st.header("Encode Text")
         input_text = st.text_area("Enter Devanagari Text:", "")
-        if st.button("Encode"):
+        if st.button("Encode", key="encode_button"):
             if input_text:
                 try:
-                    encoded_tokens = encode(input_text)
-                    st.text_area(
-                        "Encoded Tokens:", value=str(encoded_tokens), height=200
-                    )
+                    st.session_state["encoded_tokens"] = encode(input_text)
                 except Exception as e:
                     st.error(f"Error during encoding: {e}")
             else:
                 st.warning("Please enter some text to encode.")
+        st.text_area(
+            "Encoded Tokens:", value=str(st.session_state["encoded_tokens"]), height=200
+        )
 
     # Column 2: Decoding
     with col2:
         st.header("Decode Tokens")
         input_tokens = st.text_area("Enter Encoded Tokens (as a Python list):", "")
-        if st.button("Decode"):
+        if st.button("Decode", key="decode_button"):
             if input_tokens:
                 try:
                     token_list = eval(input_tokens)  # Convert string to list
-                    # st.write(len(token_list))
-                    # st.write(itos.get)
                     if isinstance(token_list, list) and all(
                         isinstance(i, int) for i in token_list
                     ):
-                        decoded_text = decode(token_list)
-                        st.text_area("Decoded Text:", value=decoded_text, height=200)
+                        st.session_state["decoded_text"] = decode(token_list)
                     else:
                         st.error("Invalid input! Please enter a list of integers.")
                 except Exception as e:
                     st.error(f"Error during decoding: {e}")
             else:
                 st.warning("Please enter some tokens to decode.")
+        st.text_area(
+            "Decoded Text:", value=st.session_state["decoded_text"], height=200
+        )
 
 
 if __name__ == "__main__":
